@@ -15,6 +15,16 @@ app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 
 ##############################################
+@app.get("/")
+@x.no_cache
+def show_index():
+    try:
+        return render_template("page_index.html", x=x)
+    except Exception as ex:
+        ic(ex)
+        return "oops...", 500    
+
+##############################################
 @app.get("/signup")
 @x.no_cache
 def show_signup():
@@ -157,7 +167,13 @@ def show_profile():
     try:
         user = session.get("user", "")
         if not user: return redirect("/login")
-        return render_template("page_profile.html", user=user, x=x)
+
+        db, cursor = x.db()
+        q = "SELECT * FROM travels WHERE user_fk = %s ORDER BY travel_created_at DESC"
+        cursor.execute(q, (user["user_pk"],))
+        travels = cursor.fetchall()
+
+        return render_template("page_profile.html", user=user, travels=travels, x=x)
     except Exception as ex:
         ic(ex)
         return "oops...", 500
@@ -197,10 +213,67 @@ def api_create_travel():
         cursor.execute(q, (travel_pk, user["user_pk"], travel_title, travel_country, travel_location, travel_start_date, travel_end_date, travel_description, travel_created_at))
         db.commit()
 
+        return """<browser mix-redirect="/profile"></browser>""", 201
+
     except Exception as ex:
         ic(ex)
         return "oops...", 500
 
     finally:
         if "cursor" in locals(): cursor.close()
-        if "db" in locals(): db.close()    
+        if "db" in locals(): db.close()
+
+##############################################
+@app.get("/travel/<travel_pk>")
+@x.no_cache
+def show_travel_single(travel_pk):
+    try:
+        user = session.get("user", "")
+        if not user:
+            return redirect("/login")
+
+        db, cursor = x.db()
+
+        q = "SELECT * FROM travels WHERE travel_pk = %s AND user_fk = %s"
+        cursor.execute(q, (travel_pk, user["user_pk"]))
+        travel = cursor.fetchone()
+
+        if not travel:
+            return "Travel not found", 404
+
+
+        return render_template("page_travel_singleview.html", travel=travel, user=user, x=x)
+    except Exception as ex:
+        ic(ex)
+        return "oops...", 500
+
+    finally:
+        if "cursor" in locals(): cursor.close()
+        if "db" in locals(): db.close()
+
+##############################################
+@app.delete("/travel/<travel_pk>")
+def delete_travel_single(travel_pk):
+    try:
+        user = session.get("user", "")
+        if not user:
+            return redirect("/login")
+
+        db, cursor = x.db()
+
+        q = """DELETE FROM travels WHERE travel_pk = %s AND user_fk = %s"""
+        cursor.execute(q, (travel_pk, user["user_pk"]))
+        db.commit()
+
+        if cursor.rowcount == 0:
+            return "Travel not found", 404
+
+        return """<browser mix-redirect="/profile"></browser>""", 200   
+
+    except Exception as ex:
+        ic(ex)
+        return "oops...", 500
+
+    finally:
+        if "cursor" in locals(): cursor.close()
+        if "db" in locals(): db.close()                

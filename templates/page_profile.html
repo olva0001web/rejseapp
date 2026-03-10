@@ -1,9 +1,47 @@
 {% include "_header.html" %} 
 
 <main>
+    <div class="profile-title">
+    <h1>Hello {{ user.user_first_name }}, welcome back!</h1>
+    </div>
 
-    Hello
+    <button class="action_button" id="toggle-travel-form">Log new travel</button>
 
+    <div id="travel-form-container" style="display:none;">
+        {% include "___form_create_travel.html" %}
+    </div>
+
+    {% for travel in travels %}
+    <div class="travel-card-container">
+        <a href="/travel/{{ travel.travel_pk }}">
+            <div class="travel-card">
+                <div class="travel-card-left">
+                    <img class="flag"
+                    src="https://flagcdn.com/{{ travel.travel_country.lower() }}.svg">
+                </div>
+                <div class="travel-card-right">
+                    <h3 class="travel-title">
+                        {{ travel.travel_title }}
+                    </h3>
+
+                    <p>
+                        {{ travel.travel_location }}
+                    </p>
+
+                    <p>
+                        {{ travel.travel_description | truncate(50, True, "...") }}
+                    </p>
+
+                    <p>
+                        {{ x.format_date_range(travel.travel_start_date, travel.travel_end_date) }}
+                    </p>
+                </div>
+            </div>
+        </a>
+    </div>
+    {% else %}
+    <h2 class="no-travels-text">You currently have no logged travels. Get started by clicking the button above!</h2>
+    {% endfor %}
 </main>
 
 {% include "_footer.html" %}

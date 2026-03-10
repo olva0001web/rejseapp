@@ -1,0 +1,51 @@
+<form mix-post="/api-create-travel" autocomplete="off">
+        
+    <div>
+        <label>
+            Title <span>{{ x.TRAVEL_TITLE_MIN }} to {{ x.TRAVEL_TITLE_MAX }} characters</span>
+        </label>
+        <input name="travel_title" type="text" placeholder="Title"
+        mix-validate="{{x.REGEX_TRAVEL_TITLE}}">
+    </div>
+
+    <div>
+        <label>Country</label>
+
+        <select id="country-select" name="travel_country" required>
+        <option value="">Select country</option>
+        </select>
+    </div>
+
+    <div>
+        <label>
+            Location <span>{{ x.TRAVEL_LOCATION_MIN }} to {{ x.TRAVEL_LOCATION_MAX }} characters</span>
+        </label>
+        <input name="travel_location" type="text" placeholder="Location"
+        mix-validate="{{x.REGEX_TRAVEL_LOCATION}}">
+    </div>
+
+    <div>
+        <label>
+            Start date <span>required</span>
+        </label>
+        <input name="travel_start_date" type="date">
+    </div>
+
+    <div>
+        <label>
+            End date <span>required</span>
+        </label>
+        <input name="travel_end_date" type="date">
+    </div>
+
+    <div>
+        <label>
+            Description <span>{{ x.TRAVEL_DESCRIPTION_MIN }} to {{ x.TRAVEL_DESCRIPTION_MAX }} characters</span>
+        </label>
+        <textarea name="travel_description" placeholder="Description" maxlength="5000"
+        mix-validate="{{x.REGEX_TRAVEL_DESCRIPTION}}"></textarea>
+    </div>
+
+    <button>Create travel</button>
+
+</form>

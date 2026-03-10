@@ -2,7 +2,16 @@ from flask import request, make_response
 import mysql.connector
 import re # Regular expressions also called Regex
 from functools import wraps
-from datetime import datetime # to be able to convert string date into epoch
+from datetime import datetime
+
+def format_date_range(start_ts, end_ts):
+    start = datetime.fromtimestamp(start_ts)
+    end = datetime.fromtimestamp(end_ts)
+
+    if start.year == end.year and start.month == end.month:
+        return f"{start.strftime('%b %d')}-{end.strftime('%d, %Y')}"
+    
+    return f"{start.strftime('%b %d, %Y')} - {end.strftime('%b %d, %Y')}"
 
 ##############################
 def db():
@@ -102,7 +111,7 @@ def validate_travel_location():
 ##############################
 TRAVEL_DESCRIPTION_MIN = 2
 TRAVEL_DESCRIPTION_MAX = 5000
-REGEX_TRAVEL_DESCRIPTION = f"^.{{{TRAVEL_DESCRIPTION_MIN},{TRAVEL_DESCRIPTION_MAX}}}$"
+REGEX_TRAVEL_DESCRIPTION = f"^[\\s\\S]{{{TRAVEL_DESCRIPTION_MIN},{TRAVEL_DESCRIPTION_MAX}}}$"
 def validate_travel_description():
     travel_description = request.form.get("travel_description", "").strip()
     if not re.match(REGEX_TRAVEL_DESCRIPTION, travel_description):

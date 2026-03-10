@@ -4,24 +4,33 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/static/app.css" />
+    <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
     <title>Document</title>
   </head>
   <body>
 
     <div id="tooltip"></div>
 
-    <nav>
-        <a href="/index">Home</a>
-        <a href="/signup">Sign up</a>
-        
+    <nav class="navbar">
+
+    <div class="nav-left">
+    {% if user %}
+        <a class="logo" href="/profile">TravelApp</a>
+    {% else %}
+        <a class="logo" href="/">TravelApp</a>
+    {% endif %}
+</div>
+
+    <div class="nav-right">
+
         {% if not user %}
-        
-            <a href="/login">Login</a>
-
+        <a class="btn btn-signup" href="/signup">Sign up</a>
+            <a class="btn btn-login" href="/login">Login</a>
         {% else %}
-
-            <a href="/logout">Logout</a>
-
+            <a class="btn btn-logout" href="/logout">Logout</a>
         {% endif %}
 
-    </nav>
+    </div>
+
+</nav>
