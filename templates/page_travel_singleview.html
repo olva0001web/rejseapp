@@ -45,9 +45,16 @@
 
         <h2>Photos</h2>
 
+        {% if travel.travel_photo_url %}
         <div class="travel-photos">
             <img src="{{ travel.travel_photo_url }}">
         </div>
+
+        {% else %}
+
+        <p>No photos added</p>
+
+        {% endif %}
 
     </div>
 

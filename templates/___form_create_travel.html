@@ -1,4 +1,4 @@
-<form mix-post="/api-create-travel" autocomplete="off">
+<form mix-post="/api-create-travel" enctype="multipart/form-data" autocomplete="off">
         
     <div>
         <label>
@@ -44,6 +44,11 @@
         </label>
         <textarea name="travel_description" placeholder="Description" maxlength="5000"
         mix-validate="{{x.REGEX_TRAVEL_DESCRIPTION}}"></textarea>
+    </div>
+
+    <div>
+        <label>Photo (optional)</label>
+        <input type="file" name="travel_photo" accept="image/*">
     </div>
 
     <button>Create travel</button>

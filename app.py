@@ -206,11 +206,20 @@ def api_create_travel():
         travel_pk = uuid.uuid4().hex
         travel_created_at = int(time.time())
 
+        photo = request.files.get("travel_photo")
+        travel_photo_url = None
+
+        if photo and photo.filename != "":
+            filename = f"{uuid.uuid4().hex}_{photo.filename}"
+            path = f"static/uploads/{filename}"
+            photo.save(path)
+            travel_photo_url = f"/static/uploads/{filename}"
+
         db, cursor = x.db()
         q = """
-        INSERT INTO travels VALUES (%s,%s,%s,%s,%s,%s,%s,%s,NULL,%s,NULL)
+        INSERT INTO travels VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NULL)
         """
-        cursor.execute(q, (travel_pk, user["user_pk"], travel_title, travel_country, travel_location, travel_start_date, travel_end_date, travel_description, travel_created_at))
+        cursor.execute(q, (travel_pk, user["user_pk"], travel_title, travel_country, travel_location, travel_start_date, travel_end_date, travel_description, travel_photo_url, travel_created_at))
         db.commit()
 
         return """<browser mix-redirect="/profile"></browser>""", 201
