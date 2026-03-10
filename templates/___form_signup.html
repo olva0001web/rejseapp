@@ -1,0 +1,36 @@
+<form mix-post="/api-create-user" autocomplete="off">
+        
+        <div>
+            <label for="">
+                First name <span>{{ x.USER_FIRST_NAME_MIN }} to {{ x.USER_FIRST_NAME_MAX }} characters</span>
+            </label>
+            <input name="user_first_name" type="text" placeholder="First name" 
+            mix-validate="{{x.REGEX_USER_FIRST_NAME}}">
+        </div>
+        
+        <div>
+            <label for="">
+                Last name <span>{{ x.USER_LAST_NAME_MIN }} to {{ x.USER_LAST_NAME_MAX }} characters</span>
+            </label>
+        <input name="user_last_name" type="text" placeholder="Last name" 
+        mix-validate="{{x.REGEX_USER_LAST_NAME}}">
+        </div>
+        
+        <div>
+            <label for="">
+                Email <span>is invalid</span>
+            </label>
+        <input name="user_email" type="text" placeholder="Email" 
+        mix-validate="{{x.REGEX_USER_EMAIL}}">
+        </div>
+        
+        <div>
+            <label for="">
+                Password <span>{{ x.USER_PASSWORD_MIN }} to {{ x.USER_PASSWORD_MAX }}</span>
+            </label>
+        <input name="user_password" type="password" placeholder="Password" 
+        mix-validate="{{x.REGEX_USER_PASSWORD}}">
+        </div>
+        
+        <button>Sign up</button>
+    </form>
