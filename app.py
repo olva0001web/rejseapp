@@ -11,6 +11,7 @@ ic.configureOutput(prefix=f'----- | ', includeContext=True)
 
 app = Flask(__name__)
 
+app.config["MAX_CONTENT_LENGTH"] = 5 * 1024 * 1024
 app.config['SESSION_TYPE'] = 'filesystem'
 Session(app)
 
@@ -169,11 +170,19 @@ def show_profile():
         if not user: return redirect("/login")
 
         db, cursor = x.db()
-        q = "SELECT * FROM travels WHERE user_fk = %s ORDER BY travel_created_at DESC"
+        q = "SELECT * FROM travels WHERE user_fk = %s ORDER BY travel_start_date DESC"
         cursor.execute(q, (user["user_pk"],))
         travels = cursor.fetchall()
 
-        return render_template("page_profile.html", user=user, travels=travels, x=x)
+        stats = {
+            "trips": len(travels),
+            "countries": len(set(
+                t["travel_country_code"] for t in travels
+                if t["travel_country_code"]
+            ))
+        }
+
+        return render_template("page_profile.html", user=user, travels=travels, stats=stats, x=x)
     except Exception as ex:
         ic(ex)
         return "oops...", 500
@@ -202,6 +211,7 @@ def api_create_travel():
         travel_start_date = x.validate_travel_start_date()
         travel_end_date = x.validate_travel_end_date()
         travel_description = x.validate_travel_description()
+        travel_country_code = x.validate_travel_country_code()
 
         travel_pk = uuid.uuid4().hex
         travel_created_at = int(time.time())
@@ -217,12 +227,25 @@ def api_create_travel():
 
         db, cursor = x.db()
         q = """
-        INSERT INTO travels VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NULL)
+        INSERT INTO travels VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,NULL,%s)
         """
-        cursor.execute(q, (travel_pk, user["user_pk"], travel_title, travel_country, travel_location, travel_start_date, travel_end_date, travel_description, travel_photo_url, travel_created_at))
+        cursor.execute(q, (travel_pk, user["user_pk"], travel_title, travel_country, travel_location, travel_start_date, travel_end_date, travel_description, travel_photo_url, travel_created_at, travel_country_code))
         db.commit()
 
-        return """<browser mix-redirect="/profile"></browser>""", 201
+        # Fetch the inserted travel (ensures structure matches the rest of your app)
+        cursor.execute("SELECT * FROM travels WHERE travel_pk = %s", (travel_pk,))
+        travel = cursor.fetchone()
+
+        # Render the travel card
+        card = render_template("___travel_card.html", travel=travel, x=x)
+
+        # Insert the card at the top of the list
+        return f"""
+        <browser mix-remove="#no-travels-text"></browser>
+        <browser mix-after-begin=".travel-card-container">
+        {card}
+        </browser>
+        """
 
     except Exception as ex:
         ic(ex)
@@ -231,6 +254,8 @@ def api_create_travel():
     finally:
         if "cursor" in locals(): cursor.close()
         if "db" in locals(): db.close()
+
+
 
 ##############################################
 @app.get("/travel/<travel_pk>")
@@ -277,7 +302,7 @@ def delete_travel_single(travel_pk):
         if cursor.rowcount == 0:
             return "Travel not found", 404
 
-        return """<browser mix-redirect="/profile"></browser>""", 200   
+        return "", 200   
 
     except Exception as ex:
         ic(ex)
@@ -285,4 +310,47 @@ def delete_travel_single(travel_pk):
 
     finally:
         if "cursor" in locals(): cursor.close()
-        if "db" in locals(): db.close()                
+        if "db" in locals(): db.close()  
+
+##############################################
+@app.get("/travel/<travel_pk>/panel")
+def travel_panel(travel_pk):
+    try:
+        user = session.get("user")
+        if not user:
+            return "", 401
+
+        db, cursor = x.db()
+
+        q = """SELECT * FROM travels
+               WHERE travel_pk=%s AND user_fk=%s"""
+        cursor.execute(q, (travel_pk, user["user_pk"]))
+
+        travel = cursor.fetchone()
+
+        if not travel:
+            return "Travel not found", 404
+
+        return render_template("___travel_details.html", travel=travel, user=user, x=x)
+
+    except Exception as ex:
+        ic(ex)
+        return "oops", 500
+
+    finally:
+        if "cursor" in locals(): cursor.close()
+        if "db" in locals(): db.close()          
+
+##############################################
+@app.get("/travel/create/panel")
+def travel_create_panel():
+    try:
+        user = session.get("user")
+        if not user:
+            return "", 401
+
+        return render_template("___form_create_travel.html", x=x)
+
+    except Exception as ex:
+        ic(ex)
+        return "oops", 500

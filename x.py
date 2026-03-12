@@ -144,3 +144,12 @@ def validate_travel_end_date():
         return int(date_obj.timestamp())
     except:
         raise Exception("company_exception travel_end_date")
+
+##############################
+def validate_travel_country_code():
+    travel_country_code = request.form.get("travel_country_code", "").strip().lower()
+
+    if not re.match("^[a-z]{2}$", travel_country_code):
+        raise Exception("company_exception travel_country_code")
+
+    return travel_country_code

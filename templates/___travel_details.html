@@ -1,0 +1,58 @@
+<div class="travel-single-container">
+
+    <div class="travel-row-1">
+
+        <div class="travel-info">
+            <h1>{{ travel.travel_title }}</h1>
+
+            <p><strong>Location:</strong> {{ travel.travel_location }}</p>
+
+            <p><strong>Country:</strong> {{ travel.travel_country.upper() }}</p>
+
+            <p>
+                <strong>Travel dates:</strong>
+                {{ x.format_date_range(travel.travel_start_date, travel.travel_end_date) }}
+            </p>
+
+            <p><strong>Description:</strong></p>
+            <p class="travel-description">{{ travel.travel_description }}</p>
+        </div>
+
+        <div class="travel-flag">
+            <img src="https://flagcdn.com/{{ travel.travel_country_code }}.svg">
+        </div>
+
+    </div>
+
+    <div class="travel-actions">
+        <button class="action_button">Update info</button>
+
+        <button
+            class="delete_button"
+            onclick="openDeleteModal('{{ travel.travel_pk }}')"
+        >
+            Delete
+        </button>
+    </div>
+
+    <div id="delete-modal-{{ travel.travel_pk }}" class="modal-overlay">
+
+        <div class="modal-box">
+
+            <p>
+                Delete {{ travel.travel_title }}? This cannot be undone.
+            </p>
+
+            <div class="modal-actions">
+
+                <button class="delete_button" onclick="deleteTravel('{{ travel.travel_pk }}')">Yes, delete</button>
+
+                <button class="action_button" onclick="closeDeleteModal('{{ travel.travel_pk }}')">Cancel</button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

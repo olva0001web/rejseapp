@@ -1,0 +1,46 @@
+<div class="travel-card" data-id="{{ travel.travel_pk }}">
+
+    <!-- COLUMN 1 : FLAG -->
+    <div class="travel-card-left">
+        <img
+            class="flag"
+            src="https://flagcdn.com/{{ travel.travel_country_code }}.svg"
+        >
+    </div>
+
+    <!-- COLUMN 2 : INFO -->
+    <div class="travel-card-right">
+
+        <h3 class="travel-title">
+            {{ travel.travel_title }}
+        </h3>
+
+        <p>
+            {{ travel.travel_location }}
+        </p>
+
+        <p>
+            {{ travel.travel_description | truncate(50, True, "...") }}
+        </p>
+
+        <p>
+            {{ x.format_date_range(
+                travel.travel_start_date,
+                travel.travel_end_date
+            ) }}
+        </p>
+
+    </div>
+
+    <!-- COLUMN 3 : PHOTO -->
+    <div class="travel-card-photo">
+
+        {% if travel.travel_photo_url %}
+            <img src="{{ travel.travel_photo_url }}" alt="">
+        {% else %}
+            <div class="travel-photo-placeholder"></div>
+        {% endif %}
+
+    </div>
+
+</div>

@@ -1,4 +1,4 @@
-<form mix-post="/api-create-travel" enctype="multipart/form-data" autocomplete="off">
+<form id="create-travel-form" enctype="multipart/form-data" autocomplete="off">
         
     <div>
         <label>
@@ -12,8 +12,10 @@
         <label>Country</label>
 
         <select id="country-select" name="travel_country" required>
-        <option value="">Select country</option>
+            <option value="">Select country</option>
         </select>
+
+        <input type="hidden" name="travel_country_code" id="country-code">
     </div>
 
     <div>

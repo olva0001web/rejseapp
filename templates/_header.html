@@ -6,9 +6,10 @@
     <link rel="stylesheet" href="/static/app.css" />
     <link href="https://cdn.jsdelivr.net/npm/tom-select/dist/css/tom-select.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/tom-select/dist/js/tom-select.complete.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <title>Document</title>
   </head>
-  <body>
+  <body mix-on="yes">
 
     <div id="tooltip"></div>
 
@@ -16,19 +17,19 @@
 
     <div class="nav-left">
     {% if user %}
-        <a class="logo" href="/profile">TravelApp</a>
+        <a class="logo" href="/profile"><i data-lucide="Earth"></i>TravelApp</a>
     {% else %}
-        <a class="logo" href="/">TravelApp</a>
+        <a class="logo" href="/"><i data-lucide="Earth"></i>TravelApp</a>
     {% endif %}
 </div>
 
     <div class="nav-right">
 
         {% if not user %}
-        <a class="btn btn-signup" href="/signup">Sign up</a>
-            <a class="btn btn-login" href="/login">Login</a>
+        <a class="btn btn-signup" href="/signup"><i data-lucide="CirclePlus"></i>Sign up</a>
+            <a class="btn btn-login" href="/login"><i data-lucide="UserRound"></i>Login</a>
         {% else %}
-            <a class="btn btn-logout" href="/logout">Logout</a>
+            <a class="btn btn-logout" href="/logout"><i data-lucide="LogOut"></i>Logout</a>
         {% endif %}
 
     </div>
