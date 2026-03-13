@@ -13,6 +13,11 @@ def format_date_range(start_ts, end_ts):
     
     return f"{start.strftime('%b %d, %Y')} - {end.strftime('%b %d, %Y')}"
 
+def epoch_to_input_date(ts):
+    if not ts:
+        return ""
+    return datetime.fromtimestamp(ts).strftime("%Y-%m-%d")
+
 ##############################
 def db():
     try:

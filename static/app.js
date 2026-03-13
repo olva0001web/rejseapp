@@ -52,7 +52,6 @@ document.addEventListener("DOMContentLoaded", () => {
 function attachCreateTravelHandler(){
 
     const form = document.querySelector("#travel-form-container form")
-
     if(!form) return
 
     form.addEventListener("submit", async (e) => {
@@ -60,34 +59,45 @@ function attachCreateTravelHandler(){
         e.preventDefault()
 
         const data = new FormData(form)
+        const travel_pk = data.get("travel_pk")
 
-        const res = await fetch("/api-create-travel", {
-            method: "POST",
+        let url = "/api-create-travel"
+        let method = "POST"
+
+        if(travel_pk){
+            url = `/travel/${travel_pk}`
+            method = "PATCH"
+        }
+
+        const res = await fetch(url,{
+            method: method,
             body: data
         })
 
         if(!res.ok){
-            alert("Failed to create travel")
+            alert("Failed to save travel")
             return
         }
 
-        const cardHTML = await res.text()
+        const html = await res.text()
 
-        const container = document.querySelector(".travel-card-container")
+        if(method === "POST"){
 
-        container.insertAdjacentHTML("afterbegin", cardHTML)
+            const container = document.querySelector(".travel-card-container")
+            container.insertAdjacentHTML("afterbegin", html)
 
-        // remove empty state message
-        const emptyMsg = document.getElementById("no-travels-text")
-        if (emptyMsg) emptyMsg.remove()
+        } else {
 
-        // close form panel
+            const card = document.querySelector(`[data-id="${travel_pk}"]`)
+            if(card) card.outerHTML = html
+
+        }
+
         const panel = document.getElementById("travel-form-container")
         panel.innerHTML = ""
         panel.style.display = "none"
 
     })
-
 }
 
 
@@ -157,6 +167,18 @@ async function loadCountries(){
 
     })
 
+    // apply selected country when editing
+    const selected = select.dataset.selected
+
+    if(selected){
+        select.value = selected
+
+        const option = select.querySelector(`option[value="${selected}"]`)
+        if(option){
+            document.getElementById("country-code").value = option.dataset.code
+        }
+    }
+
     new TomSelect("#country-select",{
 
         render:{
@@ -197,5 +219,21 @@ async function loadCountries(){
         }
 
     })
+
+}
+
+
+async function openUpdateTravel(id){
+
+    const panel = document.getElementById("travel-form-container")
+
+    const res = await fetch(`/travel/${id}/edit/panel`)
+    const html = await res.text()
+
+    panel.innerHTML = html
+    panel.style.display = "block"
+
+    loadCountries()
+    attachCreateTravelHandler()
 
 }

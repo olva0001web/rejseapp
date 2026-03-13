@@ -313,6 +313,99 @@ def delete_travel_single(travel_pk):
         if "db" in locals(): db.close()  
 
 ##############################################
+@app.get("/travel/<travel_pk>/edit/panel")
+def travel_edit_panel(travel_pk):
+
+    try:
+        user = session.get("user", "")
+        if not user:
+            return redirect("/login")
+
+        db, cursor = x.db()
+
+        q = """
+        SELECT * FROM travels
+        WHERE travel_pk = %s
+        AND user_fk = %s
+        """
+
+        cursor.execute(q, (travel_pk, user["user_pk"]))
+        travel = cursor.fetchone()
+
+        return render_template("___form_create_travel.html", travel=travel, x=x)
+
+    except Exception as ex:
+        ic(ex)
+        return "oops...", 500
+
+    finally:
+        if "cursor" in locals(): cursor.close()
+        if "db" in locals(): db.close()
+
+##############################################
+@app.patch("/travel/<travel_pk>")
+def update_travel_single(travel_pk):
+    try:
+        user = session.get("user", "")
+        if not user:
+            return redirect("/login")
+
+        travel_title = x.validate_travel_title()
+        travel_country = x.validate_travel_country()
+        travel_location = x.validate_travel_location()
+        travel_start_date = x.validate_travel_start_date()
+        travel_end_date = x.validate_travel_end_date()
+        travel_description = x.validate_travel_description()
+        travel_country_code = x.validate_travel_country_code()
+
+        db, cursor = x.db()
+
+        q = """
+        UPDATE travels
+        SET
+            travel_title = %s,
+            travel_country = %s,
+            travel_location = %s,
+            travel_start_date = %s,
+            travel_end_date = %s,
+            travel_description = %s,
+            travel_country_code = %s
+        WHERE travel_pk = %s
+        AND user_fk = %s
+        """
+
+        cursor.execute(q, (
+            travel_title,
+            travel_country,
+            travel_location,
+            travel_start_date,
+            travel_end_date,
+            travel_description,
+            travel_country_code,
+            travel_pk,
+            user["user_pk"]
+        ))
+
+        db.commit()
+
+        cursor.execute("SELECT * FROM travels WHERE travel_pk = %s", (travel_pk,))
+        travel = cursor.fetchone()
+
+        card = render_template("___travel_card.html", travel=travel, x=x)
+
+        return card
+
+        
+    except Exception as ex:
+        ic(ex)
+        return "oops...", 500
+
+    finally:
+        if "cursor" in locals(): cursor.close()
+        if "db" in locals(): db.close()  
+
+
+##############################################
 @app.get("/travel/<travel_pk>/panel")
 def travel_panel(travel_pk):
     try:

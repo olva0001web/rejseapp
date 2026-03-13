@@ -25,7 +25,12 @@
     </div>
 
     <div class="travel-actions">
-        <button class="action_button">Update info</button>
+        <button
+            class="action_button"
+            onclick="openUpdateTravel('{{ travel.travel_pk }}')"
+        >
+        Update details
+        </button>
 
         <button
             class="delete_button"

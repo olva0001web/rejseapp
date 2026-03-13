@@ -1,51 +1,72 @@
 <form id="create-travel-form" enctype="multipart/form-data" autocomplete="off">
-        
+    <input type="hidden" name="travel_pk" value="{{ travel.travel_pk if travel else '' }}">
+    <p class="form-note"><span class="required">*</span> Required fields</p>
     <div>
         <label>
-            Title <span>{{ x.TRAVEL_TITLE_MIN }} to {{ x.TRAVEL_TITLE_MAX }} characters</span>
+            Title<span class="required">*</span> <span>{{ x.TRAVEL_TITLE_MIN }} to {{ x.TRAVEL_TITLE_MAX }} characters</span>
         </label>
-        <input name="travel_title" type="text" placeholder="Title"
-        mix-validate="{{x.REGEX_TRAVEL_TITLE}}">
+        <input name="travel_title" type="text" placeholder="Title" value="{{ travel.travel_title if travel else '' }}"
+        mix-validate="{{x.REGEX_TRAVEL_TITLE}}" required>
     </div>
 
     <div>
-        <label>Country</label>
+        <label>Country<span class="required">*</span></label>
 
-        <select id="country-select" name="travel_country" required>
+        <select
+            id="country-select"
+            name="travel_country"
+            data-selected="{{ travel.travel_country if travel else '' }}"
+            required
+        >
             <option value="">Select country</option>
         </select>
 
-        <input type="hidden" name="travel_country_code" id="country-code">
+        <input
+            type="hidden"
+            name="travel_country_code"
+            id="country-code"
+            value="{{ travel.travel_country_code if travel else '' }}"
+        >
     </div>
 
     <div>
         <label>
-            Location <span>{{ x.TRAVEL_LOCATION_MIN }} to {{ x.TRAVEL_LOCATION_MAX }} characters</span>
+            Location<span class="required">*</span> <span>{{ x.TRAVEL_LOCATION_MIN }} to {{ x.TRAVEL_LOCATION_MAX }} characters</span>
         </label>
-        <input name="travel_location" type="text" placeholder="Location"
-        mix-validate="{{x.REGEX_TRAVEL_LOCATION}}">
+        <input name="travel_location" type="text" placeholder="Location" value="{{ travel.travel_location if travel else '' }}"
+        mix-validate="{{x.REGEX_TRAVEL_LOCATION}}" required>
     </div>
 
     <div>
         <label>
-            Start date <span>required</span>
+            Start date<span class="required">*</span> <span>required</span>
         </label>
-        <input name="travel_start_date" type="date">
+        <input
+            name="travel_start_date"
+            type="date"
+            value="{{ x.epoch_to_input_date(travel.travel_start_date) if travel else '' }}"
+            required
+        >
     </div>
 
     <div>
         <label>
-            End date <span>required</span>
+            End date<span class="required">*</span> <span>required</span>
         </label>
-        <input name="travel_end_date" type="date">
+        <input
+            name="travel_end_date"
+            type="date"
+            value="{{ x.epoch_to_input_date(travel.travel_end_date) if travel else '' }}"
+            required
+        >
     </div>
 
     <div>
         <label>
-            Description <span>{{ x.TRAVEL_DESCRIPTION_MIN }} to {{ x.TRAVEL_DESCRIPTION_MAX }} characters</span>
+            Description<span class="required">*</span> <span>{{ x.TRAVEL_DESCRIPTION_MIN }} to {{ x.TRAVEL_DESCRIPTION_MAX }} characters</span>
         </label>
         <textarea name="travel_description" placeholder="Description" maxlength="5000"
-        mix-validate="{{x.REGEX_TRAVEL_DESCRIPTION}}"></textarea>
+        mix-validate="{{x.REGEX_TRAVEL_DESCRIPTION}}" required>{{ travel.travel_description if travel else '' }}</textarea>
     </div>
 
     <div>
@@ -53,6 +74,8 @@
         <input type="file" name="travel_photo" accept="image/*">
     </div>
 
-    <button>Create travel</button>
+    <button>
+        {{ "Update travel" if travel else "Create travel" }}
+    </button>
 
 </form>
