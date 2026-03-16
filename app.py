@@ -174,15 +174,7 @@ def show_profile():
         cursor.execute(q, (user["user_pk"],))
         travels = cursor.fetchall()
 
-        stats = {
-            "trips": len(travels),
-            "countries": len(set(
-                t["travel_country_code"] for t in travels
-                if t["travel_country_code"]
-            ))
-        }
-
-        return render_template("page_profile.html", user=user, travels=travels, stats=stats, x=x)
+        return render_template("page_profile.html", user=user, travels=travels, x=x)
     except Exception as ex:
         ic(ex)
         return "oops...", 500
